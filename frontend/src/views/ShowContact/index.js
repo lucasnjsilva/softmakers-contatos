@@ -7,22 +7,24 @@ import { Link } from 'react-router-dom';
 import { Container, Row, Col } from 'reactstrap';
 
 const ShowContact = (props) => {
-    const [contact, setContact] = useState([]);
+    const [contact, setContact] = useState({});
+    const [address, setAddress] = useState({});
     const id = props.match.params.id;
+    const getFiles = 'http://localhost:3333'
 
     useEffect(() => {
-        if(contact.length === 0) {
-            api.get(`/${id}`).then(response => (
-                setContact(response.data)
-            ))
+        if(contact.id === undefined) {
+            api.get(`/${id}`).then(response => {
+                const { data: { contact = [] } = {} } = response;
+                setContact(contact[0] || {});
+
+                const { data: { address = [] } = {} } = response;
+                setAddress(address[0] || {});
+            });
+        } else {
+            return;
         }
-
-        if(contact.length === 1) return;
-
-        console.log(contact);
-        // console.log(contact.contact);
-        // console.log(contact.contact[0]);
-    });
+    }, [contact, id]);
 
     return (
         <>
@@ -34,7 +36,11 @@ const ShowContact = (props) => {
                         </div>
 
                         <div className="circle">
-                            <img src={noProfile} alt="Foto do perfil" fluid/>
+                            <img
+                                className="foto-perfil img-responsive"
+                                src={contact.avatar ? `${getFiles}/files/${contact.avatar}` : noProfile}
+                                alt="Foto do Perfil"
+                            />
                         </div>
 
 
@@ -47,13 +53,13 @@ const ShowContact = (props) => {
                     <Col className="col-6">
                         <ul className="lista-contato">
                             <li>
-                                <b>Nome: </b> Lucas Nathan
+                                <b>Nome: </b> {contact.name}
                             </li>
                             <li>
-                                <b>Telefone: </b> (87)99211-0368
+                                <b>Telefone: </b> {contact.phone}
                             </li>
                             <li>
-                                <b>Email: </b> lucasnathanj@gmail.com
+                                <b>Email: </b> {contact.email}
                             </li>
                         </ul>
                     </Col>
@@ -61,19 +67,19 @@ const ShowContact = (props) => {
                     <Col className="col-6">
                         <ul className="lista-endereco">
                             <li>
-                                <b>Rua: </b> Antônio Pedro da Silva
+                                <b>Rua: </b> {address.street}
                             </li>
                             <li>
-                                <b>Número: </b> 117
+                                <b>Número: </b> {address.number}
                             </li>
                             <li>
-                                <b>Bairro: </b> Prado
+                                <b>Bairro: </b> {address.district}
                             </li>
                             <li>
-                                <b>Cidade: </b> Pesqueira
+                                <b>Cidade: </b> {address.city}
                             </li>
                             <li>
-                                <b>Estado: </b> Pernambuco
+                                <b>Estado: </b> {address.state}
                             </li>
                         </ul>
                     </Col>
@@ -81,8 +87,8 @@ const ShowContact = (props) => {
 
                 <Col className="d-flex justify-content-center">
                     <div className="buttons">
-                        <Link to="/editar/:id" className="editar"> Editar </Link>
-                        <Link to="/deletar/:id" className="deletar"> Deletar </Link>
+                        <Link to={`/editar/${id}`} className="editar"> Editar </Link>
+                        <Link to={`/deletar/${id}`} className="deletar"> Deletar </Link>
                     </div>
                 </Col>
 
