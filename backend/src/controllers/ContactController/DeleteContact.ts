@@ -39,6 +39,10 @@ export default {
                 throw new Error('Contact not found');
             }
 
+            response.writeHead(301, {
+                Location: '/',
+            });
+
             return response.status(200).json() && contact;
         } catch (error) {
             throw new Error(error.message);

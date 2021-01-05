@@ -24,6 +24,7 @@ export default {
 
             return response.json(data) && contact;
         } catch (error) {
+            response.status(400);
             throw new Error(error.message);
         }
     },
